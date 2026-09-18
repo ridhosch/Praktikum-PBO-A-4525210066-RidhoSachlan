@@ -20,7 +20,7 @@ class Mahasiswa
      *
      * TODO 1: lengkapi daftar parameter — tentukan mana yang readonly.
      */
-    public function __construct(
+        public function __construct(
         private readonly string $nim,
         private readonly string $nama,
         private float $nilaiTugas,
@@ -28,10 +28,14 @@ class Mahasiswa
         private float $nilaiUas,
     ) {
         // TODO 2: tolak NIM yang kosong (setelah di-trim).
-        //         Lemparkan InvalidArgumentException dengan pesan yang jelas.
+        if (trim($nim) === '') {
+            throw new InvalidArgumentException('NIM tidak boleh kosong.');
+        }
 
         // TODO 3: tolak setiap komponen nilai di luar rentang 0-100
-        //         menggunakan method pembantu di bawah.
+        self::pastikanNilaiSah('nilaiTugas', $nilaiTugas);
+        self::pastikanNilaiSah('nilaiUts', $nilaiUts);
+        self::pastikanNilaiSah('nilaiUas', $nilaiUas);
     }
 
     /**
@@ -39,24 +43,42 @@ class Mahasiswa
      */
     private static function pastikanNilaiSah(string $namaKomponen, float $nilai): void
     {
-        // TODO
+        if ($nilai < self::NILAI_MIN || $nilai > self::NILAI_MAX) {
+            throw new InvalidArgumentException(sprintf(
+                '%s harus berada pada rentang %.0f-%.0f, diterima: %.2f',
+                $namaKomponen, self::NILAI_MIN, self::NILAI_MAX, $nilai
+            ));
+        }
     }
 
     /** TODO 5: hitung nilai akhir memakai konstanta bobot. */
     public function nilaiAkhir(): float
     {
-        return 0;   // ganti
+        return $this->nilaiTugas * self::BOBOT_TUGAS
+             + $this->nilaiUts   * self::BOBOT_UTS
+             + $this->nilaiUas   * self::BOBOT_UAS;
     }
 
     /** TODO 6: kembalikan huruf mutu. Petunjuk: match (true) { ... } */
     public function hurufMutu(): string
     {
-        return '?';   // ganti
+        $akhir = $this->nilaiAkhir();
+
+        return match (true) {
+            $akhir >= 85 => 'A',
+            $akhir >= 75 => 'B',
+            $akhir >= 60 => 'C',
+            $akhir >= 45 => 'D',
+            default      => 'E',
+        };
     }
 
     // TODO 7: sediakan getter seperlunya. JANGAN membuat setNim().
     public function getNim(): string  { return $this->nim; }
     public function getNama(): string { return $this->nama; }
+    public function getNilaiTugas(): float { return $this->nilaiTugas; }
+    public function getNilaiUts(): float   { return $this->nilaiUts; }
+    public function getNilaiUas(): float   { return $this->nilaiUas; }
 
     public function __toString(): string
     {

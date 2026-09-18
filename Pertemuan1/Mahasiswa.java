@@ -32,11 +32,16 @@ public class Mahasiswa {
         // TODO 2: tolak NIM yang kosong atau null.
         //         Lemparkan IllegalArgumentException dengan pesan yang menyebut
         //         APA yang salah — bukan sekadar "Error".
-
+        if (nim == null || nim.isEmpty()) {
+            throw new IllegalArgumentException("Nim tidak boleh kosong");
+        }
         // TODO 3: tolak setiap komponen nilai yang di luar rentang 0-100.
         //         Petunjuk: buat satu method privat pembantu agar tidak menulis
         //         pemeriksaan yang sama tiga kali.
-
+        if (nilaiTugas < NILAI_MIN || nilaiTugas > NILAI_MAX) {
+            throw new IllegalArgumentException("Nilai tugas tidak boleh di bawah " + NILAI_MIN + " mahi di atas " + NILAI_MAX);
+            }
+        
         this.nim = nim;
         this.nama = nama;
         this.nilaiTugas = nilaiTugas;
@@ -47,13 +52,19 @@ public class Mahasiswa {
     // TODO 4: buat method privat pembantu untuk memvalidasi satu komponen nilai.
     //         Tanda tangan yang disarankan:
     //         private static void pastikanNilaiSah(String namaKomponen, double nilai)
-
+    private static void pastikanNilaiSah(String namaKomponen, double nilai) throws IllegalArgumentException
+    {
+        if (nilai < NILAI_MIN || nilai > NILAI_MAX)
+            throw new IllegalArgumentException(namaKomponen + " tidak boleh di bawah " + NILAI_MIN + " mahi di atas " + NILAI_MAX);
+    }
 
     /**
      * TODO 5: hitung nilai akhir memakai konstanta bobot di atas.
      */
     public double nilaiAkhir() {
-        return 0;   // ganti
+        return (nilaiTugas * BOBOT_TUGAS)
+                + (nilaiUts * BOBOT_UTS)
+                + (nilaiUas * BOBOT_UAS);   
     }
 
     /**
@@ -61,15 +72,33 @@ public class Mahasiswa {
      *   >= 80 -> "A"   >= 70 -> "B"   >= 60 -> "C"   >= 50 -> "D"   selain itu "E"
      */
     public String hurufMutu() {
-        return "?";   // ganti
+        double nilai = nilaiAkhir();
+        
+        if (nilai >= 80) {
+            return "A";
+        } else if (nilai >= 70) {
+            return "B";
+        } else if (nilai >= 60) {
+            return "C";
+        } else if (nilai >= 50) {
+            return "D";
+        } else {
+            return "E";
+        }  
     }
 
     // ── Getter ────────────────────────────────────────────────
     // TODO 7: sediakan getter untuk nim, nama, dan nilaiAkhir.
     //         JANGAN membuat setNim(). Baca ulang invariant Anda kalau tergoda.
-
-    public String getNim()  { return nim; }
-    public String getNama() { return nama; }
+    public String getNim() {
+        return nim;
+    }
+    public String getNama() {
+        return nama;
+    }
+    public double getNilaiAkhir() {
+        return nilaiAkhir();
+    }
 
     @Override
     public String toString() {
